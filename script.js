@@ -16,7 +16,8 @@ async function loadImages() {
     const gallery = document.getElementById("gallery");
     gallery.style.position = "relative";
     gallery.style.width = "100%";
-    gallery.style.height = "500px";
+    gallery.style.height = "50vh"; // Utilise 50% de la hauteur de la fenêtre
+    gallery.style.maxHeight = "600px"; // Définit une hauteur maximale
     gallery.style.overflow = "hidden";
 
     // Création des éléments d'image avec des styles initiaux pour les transitions
@@ -30,6 +31,7 @@ async function loadImages() {
       imgElement.style.left = "0";
       imgElement.style.width = "100%";
       imgElement.style.height = "100%";
+      imgElement.style.objectFit = "cover"; // Adapte l'image sans déformation
       imgElement.style.opacity = "0";
       imgElement.style.transition = "opacity 1s ease-in-out";
 
