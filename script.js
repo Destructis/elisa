@@ -1,3 +1,5 @@
+// Exemple de code JavaScript pour afficher des images dynamiquement avec des transitions et une galerie complète
+
 // Fonction principale pour charger et afficher les images dynamiquement
 async function loadImages() {
   try {
@@ -10,34 +12,25 @@ async function loadImages() {
     // Récupération de la liste des images
     const images = await response.json();
 
-    if (!Array.isArray(images) || images.length === 0) {
-      throw new Error("Le fichier JSON ne contient pas d'images valides.");
-    }
-
-    // Mélanger les images pour les afficher dans un ordre aléatoire
-    shuffleArray(images);
-
     // Sélection de l'élément HTML où afficher les images
     const gallery = document.getElementById("gallery");
     gallery.style.position = "relative";
     gallery.style.width = "100%";
-    gallery.style.height = "100vh"; // Utiliser toute la hauteur de la fenêtre
+    gallery.style.height = "50vh"; // Utilise 50% de la hauteur de la fenêtre
+    gallery.style.maxHeight = "600px"; // Définit une hauteur maximale
     gallery.style.overflow = "hidden";
-
-    // Déterminer si l'écran est large ou non
-    const isWideScreen = window.innerWidth > 800;
 
     // Création des éléments d'image avec des styles initiaux pour les transitions
     images.forEach((imageName, index) => {
       const imgElement = document.createElement("img");
       imgElement.src = `images/${imageName}`; // Le chemin doit correspondre à votre dossier images
       imgElement.alt = imageName;
-      imgElement.classList.add("gallery-image");
+      imgElement.classList.add("gallery-image"); // Ajoutez une classe pour le style si nécessaire
       imgElement.style.position = "absolute";
       imgElement.style.top = "0";
-      imgElement.style.left = isWideScreen ? `${(index % 2) * 50}%` : "0"; // Affiche 2 images côte à côte si l'écran est large
-      imgElement.style.width = isWideScreen ? "50%" : "100%"; // Si large, chaque image occupe 50% de la largeur
-      imgElement.style.height = "100%"; // Utiliser toute la hauteur de la fenêtre
+      imgElement.style.left = "0";
+      imgElement.style.width = "100%";
+      imgElement.style.height = "100%";
       imgElement.style.objectFit = "cover"; // Adapte l'image sans déformation
       imgElement.style.opacity = "0";
       imgElement.style.transition = "opacity 1s ease-in-out";
@@ -52,37 +45,79 @@ async function loadImages() {
     });
 
     // Début des transitions entre les images
-    startSlideshow(gallery, images.length, isWideScreen);
+    startSlideshow(gallery, images.length);
+
+    // Ajout d'un bouton pour ouvrir la galerie complète
+    addGalleryButton(images);
   } catch (error) {
     console.error("Erreur lors du chargement des images:", error);
-    const gallery = document.getElementById("gallery");
-    gallery.innerHTML = `<p>Erreur de chargement des images. Veuillez réessayer plus tard.</p>`;
   }
 }
 
 // Fonction pour démarrer le diaporama
-function startSlideshow(gallery, totalImages, isWideScreen) {
+function startSlideshow(gallery, totalImages) {
   let currentIndex = 0;
   const images = gallery.querySelectorAll(".gallery-image");
+  const isWideScreen = window.innerWidth > 800;
 
   setInterval(() => {
     // Masquer l'image actuelle
-    images[currentIndex].style.opacity = "0";
+    images.forEach((img, index) => {
+      img.style.opacity = "0";
+    });
 
-    // Passer à l'image suivante (si on est en mode écran large, on gère 2 images)
-    currentIndex = (currentIndex + (isWideScreen ? 2 : 1)) % totalImages;
-
-    // Afficher la nouvelle image
-    images[currentIndex].style.opacity = "1";
+    if (isWideScreen) {
+      // Afficher deux images si la largeur est supérieure à 800px
+      images[currentIndex].style.opacity = "1";
+      images[(currentIndex + 1) % totalImages].style.opacity = "1";
+      currentIndex = (currentIndex + 2) % totalImages;
+    } else {
+      // Afficher une seule image
+      images[currentIndex].style.opacity = "1";
+      currentIndex = (currentIndex + 1) % totalImages;
+    }
   }, 3000); // Change d'image toutes les 3 secondes
 }
 
-// Fonction pour mélanger un tableau (algorithme de Fisher-Yates)
-function shuffleArray(array) {
-  for (let i = array.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [array[i], array[j]] = [array[j], array[i]]; // Échange les éléments
-  }
+// Fonction pour ajouter un bouton pour ouvrir la galerie complète
+function addGalleryButton(images) {
+  const button = document.createElement("button");
+  button.textContent = "Ouvrir la galerie complète";
+  button.style.position = "absolute";
+  button.style.bottom = "10px";
+  button.style.right = "10px";
+  button.style.zIndex = "1000";
+  button.style.padding = "10px 20px";
+  button.style.backgroundColor = "#000";
+  button.style.color = "#fff";
+  button.style.border = "none";
+  button.style.cursor = "pointer";
+
+  button.addEventListener("click", () => {
+    openFullGallery(images);
+  });
+
+  document.body.appendChild(button);
+}
+
+// Fonction pour ouvrir une nouvelle page avec la galerie complète
+function openFullGallery(images) {
+  const galleryWindow = window.open("", "_blank");
+  galleryWindow.document.write(
+    "<html><head><title>Galerie Complète</title></head><body>"
+  );
+  galleryWindow.document.write(
+    '<h1>Galerie Complète</h1><div style="display: flex; flex-wrap: wrap; gap: 10px;">'
+  );
+
+  images.forEach((imageName) => {
+    galleryWindow.document.write(
+      `<div style="width: calc(33.33% - 10px);"><img src="images/${imageName}" alt="${imageName}" style="width: 100%; height: auto; object-fit: cover;"></div>`
+    );
+  });
+
+  galleryWindow.document.write("</div></body></html>");
+  galleryWindow.document.close();
 }
 
 // Appel de la fonction après le chargement de la page
