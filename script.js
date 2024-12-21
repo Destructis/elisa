@@ -144,7 +144,7 @@ function openGalleryPage(images) {
   `);
 }
 
-/*  document
+document
   .getElementById("upload-form")
   .addEventListener("submit", async (event) => {
     event.preventDefault();
@@ -159,7 +159,7 @@ function openGalleryPage(images) {
       const base64Image = reader.result.split(",")[1];
 
       // Envoyer l'image à la fonction Netlify
-      const response = await fetch("/.netlify/functions/upload", {
+      const response = await fetch("/netlify/functions/upload", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -173,7 +173,7 @@ function openGalleryPage(images) {
     };
 
     reader.readAsDataURL(file);
-  });*/
+  });
 
 // Appel de la fonction après le chargement de la page
 window.onload = loadImages;
