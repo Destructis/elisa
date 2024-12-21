@@ -41,4 +41,4 @@ jobs:
           git commit -m 'Mise à jour automatique du fichier images.json'
           git push
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # Token d'accès pour les actions GitHub
