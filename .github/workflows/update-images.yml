@@ -1,0 +1,44 @@
+name: Update Images JSON
+
+on:
+  push:
+    paths:
+      - "images/**" # Déclenchement uniquement si des fichiers du dossier images changent
+
+jobs:
+  update-json:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Vérifier le code du dépôt
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      # Installer Node.js pour gérer le script
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: "16"
+
+      # Générer un nouveau fichier images.json
+      - name: Generate images.json
+        run: |
+          echo "Génération du fichier images.json..."
+          node -e "
+            const fs = require('fs');
+            const path = require('path');
+            const imagesDir = './images';
+            const images = fs.readdirSync(imagesDir).filter(file => /\.(jpg|jpeg|png|gif)$/i.test(file));
+            fs.writeFileSync('./images.json', JSON.stringify(images, null, 2));
+          "
+
+      # Commit des changements
+      - name: Commit and Push changes
+        run: |
+          git config --global user.name 'GitHub Actions'
+          git config --global user.email 'actions@github.com'
+          git add images.json
+          git commit -m 'Mise à jour automatique du fichier images.json'
+          git push
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

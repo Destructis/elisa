@@ -144,5 +144,36 @@ function openGalleryPage(images) {
   `);
 }
 
+document
+  .getElementById("upload-form")
+  .addEventListener("submit", async (event) => {
+    event.preventDefault();
+
+    const fileInput = document.getElementById("image-file");
+    const file = fileInput.files[0];
+    if (!file) return;
+
+    // Convertir le fichier en Base64
+    const reader = new FileReader();
+    reader.onload = async () => {
+      const base64Image = reader.result.split(",")[1];
+
+      // Envoyer l'image à la fonction Netlify
+      const response = await fetch("/.netlify/functions/upload", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: file.name,
+          base64: base64Image,
+        }),
+      });
+
+      const result = await response.json();
+      document.getElementById("upload-status").textContent = result.message;
+    };
+
+    reader.readAsDataURL(file);
+  });
+
 // Appel de la fonction après le chargement de la page
 window.onload = loadImages;
