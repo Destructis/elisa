@@ -1,6 +1,5 @@
 const fs = require("fs");
 const path = require("path");
-const fetch = require("node-fetch");
 
 const GITHUB_TOKEN = process.env.GITHUB_TOKEN; // Stockez ce token dans les secrets Netlify
 const REPO_OWNER = "votre-utilisateur-github";
