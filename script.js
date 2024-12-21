@@ -144,7 +144,7 @@ function openGalleryPage(images) {
   `);
 }
 
-document
+/*  document
   .getElementById("upload-form")
   .addEventListener("submit", async (event) => {
     event.preventDefault();
@@ -173,7 +173,7 @@ document
     };
 
     reader.readAsDataURL(file);
-  });
+  });*/
 
 // Appel de la fonction après le chargement de la page
 window.onload = loadImages;
